@@ -1,1 +1,437 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <title>Ο Πελοποννησιακός Πόλεμος</title>
+  <style>
+    /****************************************
+     * 1. Γενικές Ρυθμίσεις Σελίδας
+     ****************************************/
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000; /* Μαύρο φόντο */
+      color: #fff;           /* Λευκό κείμενο */
+      font-family: "Comic Sans MS", "Comic Sans", cursive; /* Comic Sans */
+      font-size: 1.125em;    /* Κείμενο ~25% μικρότερο από 1.5em */
+    }
+
+    /****************************************
+     * 2. Επάνω Μπάρα (ΚΕΝΤΡΟ Δημιουργού - ΔΕΞΙΑ Εκτύπωση)
+     ****************************************/
+    .top-bar {
+      position: relative;  /* Επιτρέπει absolute τοποθέτηση παιδιών */
+      height: 50px;        /* Σταθερό ύψος μπάρας (προσαρμοσέ το αν χρειάζεται) */
+      background-color: #000; /* Ίδιο μαύρο φόντο με το body */
+    }
+    /* Δημιουργός στο κέντρο */
+    .creator-info {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%); /* Μετακινεί το κείμενο ακριβώς στο κέντρο */
+      color: #fff;
+      font-size: 0.9em; /* Μπορείς να αυξομειώσεις αν θέλεις */
+    }
+    /* Κουμπί Εκτύπωσης στη δεξιά άκρη */
+    .print-button {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: #FFD700; /* Χρυσό */
+      color: #000;
+      border: 2px solid red;
+      cursor: pointer;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-family: "Comic Sans MS", "Comic Sans", cursive;
+    }
+
+    /****************************************
+     * 3. Τίτλος Σελίδας
+     ****************************************/
+    h1.title {
+      text-align: center;
+      color: #FFD700; /* Χρυσό */
+      margin-top: 20px;
+      margin-bottom: 20px;
+      font-size: 1.5em; 
+    }
+
+    /****************************************
+     * 4. Κουμπί Υπενθύμισης (Pop-up Trigger)
+     ****************************************/
+    .reminder-button {
+      display: block;
+      margin: 0 auto 30px auto; /* κεντραρισμένο */
+      background-color: #444;
+      color: #FFD700;
+      border: 2px solid #FFD700;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background-color 0.3s ease;
+      text-align: center;
+    }
+    .reminder-button:hover {
+      background-color: #555;
+    }
+
+    /****************************************
+     * 5. Κύριο Περιεχόμενο (οι "κάρτες")
+     ****************************************/
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 15px 40px 15px;
+    }
+    .card {
+      border: 2px solid #FFD700; /* Χρυσό περίγραμμα */
+      margin-bottom: 20px;
+      border-radius: 5px;
+      overflow: hidden; 
+    }
+    /* Επικεφαλίδα κάρτας - κλικ για εμφάνιση */
+    .card-header {
+      background-color: #FFD700; 
+      color: #000;
+      font-weight: bold;
+      padding: 10px;
+      font-size: 1em; 
+      cursor: pointer; 
+    }
+    /* Περιεχόμενο κάρτας (αρχικά κρυφό) */
+    .card-content {
+      display: none;
+      padding: 10px;
+      text-align: justify;
+    }
+    ul {
+      margin-left: 20px;
+      margin-bottom: 15px;
+    }
+    li {
+      margin-bottom: 10px;
+    }
+
+    /****************************************
+     * 6. Modal (Pop-up) για το Διάγραμμα
+     ****************************************/
+    .modal {
+      display: none; /* Αρχικά κρυφό */
+      position: fixed; 
+      z-index: 999;    
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;  
+      background-color: rgba(0, 0, 0, 0.8); /* Ημιδιάφανο μαύρο overlay */
+    }
+    .modal-content {
+      background-color: #111; 
+      margin: 5% auto;
+      padding: 20px;
+      border: 2px solid #FFD700;
+      max-width: 800px;
+      border-radius: 8px;
+      position: relative;
+    }
+    .close {
+      color: #fff;
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 2rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* Διάγραμμα (Αίτια → Αφορμή → Συνέπειες) */
+    .diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px; 
+      flex-wrap: wrap; 
+      margin: 20px 0;
+    }
+    .box {
+      background-color: #333; 
+      padding: 15px 20px;
+      border: 2px solid #FFD700; 
+      border-radius: 8px;
+      cursor: pointer; 
+      text-align: center;
+      font-size: 1em;
+      transition: background-color 0.3s ease;
+      color: #FFD700; 
+      min-width: 100px;
+    }
+    .box:hover {
+      background-color: #444; 
+    }
+    .definition-content {
+      display: none;
+      background-color: #222; 
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #555;
+      text-align: justify; 
+      color: #fff;
+    }
+    .arrow {
+      font-size: 2em;
+      color: #FFD700;
+    }
+  </style>
+
+  <script>
+    /****************************************
+     * Συναρτήσεις JavaScript
+     ****************************************/
+
+    /* Εκτύπωση σε PDF μέσω browser διαλόγου */
+    function printToPDF() {
+      window.print();
+    }
+
+    /* Εμφάνιση/Απόκρυψη περιεχομένου στις κάρτες του Πελοποννησιακού πολέμου */
+    function toggleCardContent(id) {
+      const content = document.getElementById(id);
+      if (content.style.display === "none" || content.style.display === "") {
+        content.style.display = "block";
+      } else {
+        content.style.display = "none";
+      }
+    }
+
+    /* Εμφάνιση του modal (διάγραμμα Αίτια-Αφορμή-Συνέπειες) */
+    function showModal() {
+      const modal = document.getElementById("myModal");
+      modal.style.display = "block";
+    }
+
+    /* Απόκρυψη του modal */
+    function hideModal() {
+      const modal = document.getElementById("myModal");
+      modal.style.display = "none";
+    }
+
+    /* Εμφάνιση/Απόκρυψη περιεχομένου στα κουτιά του διαγράμματος (Αίτια / Αφορμή / Συνέπειες) */
+    function toggleContent(id) {
+      const content = document.getElementById(id);
+      if (content.style.display === "none" || content.style.display === "") {
+        content.style.display = "block";
+      } else {
+        content.style.display = "none";
+      }
+    }
+
+    /* Κλείσιμο modal αν γίνει κλικ εκτός περιεχομένου */
+    window.onclick = function(event) {
+      const modal = document.getElementById("myModal");
+      if (event.target === modal) {
+        hideModal();
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <!-- 1. Επάνω Μπάρα: Δημιουργός ΚΕΝΤΡΟ, Εκτύπωση ΔΕΞΙΑ -->
+  <div class="top-bar">
+    <div class="creator-info">
+      Δημιουργία: Παναγιώτης Δόμβρος 2025 (CC BY-NC)
+    </div>
+    <button class="print-button" onclick="printToPDF()">Εκτύπωση</button>
+  </div>
+
+  <!-- 2. Τίτλος Σελίδας -->
+  <h1 class="title">Ο Πελοποννησιακός Πόλεμος ⚔️</h1>
+
+  <!-- 3. Κουμπί για να εμφανίσουμε το pop-up διάγραμμα (Αίτια-Αφορμή-Συνέπειες) -->
+  <button class="reminder-button" onclick="showModal()">
+    Ας θυμηθούμε κάτι σημαντικό ✨
+  </button>
+
+  <!-- 4. Κύριο περιεχόμενο: Κάρτες με πληροφορίες για τον Πελοποννησιακό πόλεμο -->
+  <main>
+    <!-- Κάρτα 1: Εισαγωγή -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCardContent('intro-content')">
+        Κεφάλαιο 6ο: Εισαγωγή 🏛️
+      </div>
+      <div class="card-content" id="intro-content">
+        <ul>
+          <li>
+            Ο Πελοποννησιακός πόλεμος διαιρείται σε τρεις περιόδους ⚔️: 
+            τον <strong>Αρχιδάμειο πόλεμο (431 - 421 π.Χ.)</strong>, 
+            τη <strong>Σικελική εκστρατεία (415 - 413 π.Χ.)</strong> 
+            και τον <strong>Δεκελεικό πόλεμο (413 - 404 π.Χ.)</strong>.
+          </li>
+          <li>
+            Η Αθήνα 🏹 διακρίθηκε για τη δύναμη του ναυτικού της, 
+            ενώ η Σπάρτη 🏹 και οι σύμμαχοί της για την υπεροχή 
+            του πεζικού στρατού τους.
+          </li>
+          <li>Ο πόλεμος τελείωσε με την ήττα της Αθήνας.</li>
+          <li>⚔️⚔️⚔️ Ένας πόλεμος που άλλαξε τον ρου της αρχαίας ελληνικής ιστορίας ⚔️⚔️⚔️</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Κάρτα 2: Αίτια -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCardContent('aitia-content')">
+        Τα αίτια του Πελοποννησιακού πολέμου 🤔
+      </div>
+      <div class="card-content" id="aitia-content">
+        <ul>
+          <li>🪙 Η στροφή του ενδιαφέροντος της Αθήνας προς Δύση (Ιόνιο & Αδριατική) 
+              προκαλεί την αντίδραση της Κορίνθου.
+          </li>
+          <li>📜 Η διαφορά πολιτεύματος (δημοκρατική Αθήνα vs αριστοκρατική Σπάρτη) 
+              δημιουργεί μεγάλο χάσμα.
+          </li>
+          <li>👀 Η αριστοκρατική Σπάρτη βλέπει με καχυποψία την αύξηση 
+              της δύναμης της δημοκρατικής Αθήνας.
+          </li>
+        </ul>
+        <p>Όλα αυτά έσπειραν διχόνοια ανάμεσα στις δύο μεγάλες δυνάμεις! 😱</p>
+      </div>
+    </div>
+
+    <!-- Κάρτα 3: Αφορμές -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCardContent('aformes-content')">
+        Οι αφορμές του Πελοποννησιακού πολέμου 🔍
+      </div>
+      <div class="card-content" id="aformes-content">
+        <ul>
+          <li>⚓ Η ανάμειξη της Αθήνας στη διαμάχη Κέρκυρας - Κορίνθου 
+              οξύνει την αντιπαλότητα με την Κόρινθο.
+          </li>
+          <li>🩸 Οι Κορίνθιοι ωθούν σε αποστασία την Ποτίδαια (432 π.Χ.).</li>
+          <li>🚫 Ο Περικλής απαγορεύει στα πλοία των Μεγαρέων να αγκυροβολούν 
+              σε λιμάνια της Αθηναϊκής συμμαχίας.
+          </li>
+          <li>🏹 Σε συνέδριο στη Σπάρτη αποφασίζεται ο πόλεμος (431 π.Χ.).</li>
+        </ul>
+        <p>Όλα αυτά οδήγησαν σε τελική ρήξη ανάμεσα στις δύο παρατάξεις! 😡</p>
+      </div>
+    </div>
+
+    <!-- Κάρτα 4: Τρεις φάσεις του πολέμου -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCardContent('phases-content')">
+        Οι τρεις φάσεις του Πολέμου ⚔️⚔️⚔️
+      </div>
+      <div class="card-content" id="phases-content">
+        <ul>
+          <li>⚔️ <strong>Αρχιδάμειος πόλεμος (431 - 421 π.Χ.)</strong></li>
+          <li>⚔️ <strong>Σικελική εκστρατεία (415 - 413 π.Χ.)</strong></li>
+          <li>⚔️ <strong>Δεκελεικός πόλεμος (413 - 404 π.Χ.)</strong></li>
+        </ul>
+        <p>
+          Κάθε φάση είχε δραματικές μάχες, αλλά και πολλές τραγωδίες. 
+          Οι πολίτες είχαν εξαντληθεί, οι πόλεις καταστράφηκαν και ο ελληνικός κόσμος 
+          έχασε πολύ από τη δύναμή του. 😢
+        </p>
+      </div>
+    </div>
+
+    <!-- Κάρτα 5: Συνέπειες -->
+    <div class="card">
+      <div class="card-header" onclick="toggleCardContent('sinepeies-content')">
+        Συνέπειες του Πελοποννησιακού πολέμου 💔
+      </div>
+      <div class="card-content" id="sinepeies-content">
+        <ul>
+          <li>Ο Πελοποννησιακός πόλεμος, που κράτησε 27 χρόνια 🗓️, 
+              υπήρξε καταστροφικός για όλη την Ελλάδα.
+          </li>
+          <li>Χιλιάδες άνθρωποι σκοτώθηκαν και πολλοί πουλήθηκαν ως δούλοι. 😰</li>
+          <li>Η γη καταστράφηκε και οι πόλεις μετατράπηκαν σε ερείπια. 🏚️</li>
+          <li>Η οικονομία δέχτηκε σοβαρό χτύπημα. 💸</li>
+          <li>Γκρεμίστηκαν οι ηθικές αξίες και χάθηκε η ανθρωπιά. 😞</li>
+          <li>Διαλύθηκε η ελπίδα πολιτικής ένωσης των Ελλήνων.</li>
+          <li>Η Περσία βρήκε ευκαιρία να αναμειχθεί στα ελληνικά πράγματα, 
+              επιδεινώνοντας την κατάσταση. 🚨
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- 6. Modal (Pop-up) για το Διάγραμμα Αίτια - Αφορμή - Συνέπειες -->
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="hideModal()">&times;</span>
+      
+      <h2 style="text-align:center; color:#FFD700; margin:0 0 20px 0;">
+        Αίτια → Αφορμή → Συνέπειες
+      </h2>
+      
+      <p style="text-align:center; color:#fff;">
+        Κάνε κλικ σε κάθε κουτί για να δεις τον ορισμό! 🤩
+      </p>
+
+      <div class="diagram">
+        <!-- Αίτια -->
+        <div class="box" onclick="toggleContent('causes')">
+          Αίτια 🤔🤔
+          <div class="definition-content" id="causes">
+            <p>
+              <strong>Αίτια</strong> = οι βαθύτεροι λόγοι που εξηγούν 
+              <em>γιατί</em> συμβαίνει κάτι. 
+              Σαν τη «ρίζα» της ιστορίας! 🌱 <br><br>
+              (Π.χ. οικονομικές φιλοδοξίες, πολιτικές διαφορές κ.λπ.) 🏛️💰
+            </p>
+          </div>
+        </div>
+
+        <!-- Βέλος -->
+        <div class="arrow">➡️</div>
+
+        <!-- Αφορμή -->
+        <div class="box" onclick="toggleContent('trigger')">
+          Αφορμή ⚡⚡
+          <div class="definition-content" id="trigger">
+            <p>
+              <strong>Αφορμή</strong> = το γεγονός που «ανάβει τη σπίθα» 
+              και κάνει όλα να ξεσπάσουν. Είναι το «ξεκίνημα» με μια μόνο κίνηση! 
+              <br><br>
+              (Π.χ. μια δολοφονία, μια επίθεση, μια δήλωση κ.λπ.) 🔥
+            </p>
+          </div>
+        </div>
+
+        <!-- Βέλος -->
+        <div class="arrow">➡️</div>
+
+        <!-- Συνέπειες -->
+        <div class="box" onclick="toggleContent('effects')">
+          Συνέπειες 🤯
+          <div class="definition-content" id="effects">
+            <p>
+              <strong>Συνέπειες</strong> = τα αποτελέσματα που ακολουθούν 
+              μετά από ένα γεγονός. Μπορεί να είναι θετικά ή αρνητικά, 
+              αλλά πάντα μάς δείχνουν τι άλλαξε! 
+              <br><br>
+              (Π.χ. απώλειες, νέοι νόμοι, πολιτικές αλλαγές κ.λπ.) ⚖️🌍
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
 
